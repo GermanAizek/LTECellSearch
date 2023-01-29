@@ -1,0 +1,4 @@
+[submodule "srsRAN"]
+	path = srsRAN
+	url = /home/ubuntu/GIT/LTECellSearch/srsRAN
+	branch = master
