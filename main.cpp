@@ -39,9 +39,10 @@ struct cells {
 };
 struct cells results[1024];
 
-float rf_gain = 70.0;
-char* rf_args = "";
-char* rf_dev  = "";
+float rf_gain       = 70.0;
+int   rf_nof_rx_ant = 1;
+char* rf_args       = "";
+char* rf_dev        = "";
 
 void usage(char* prog)
 {
@@ -49,6 +50,7 @@ void usage(char* prog)
   printf("\t-a RF args [Default %s]\n", rf_args);
   printf("\t-d RF devicename [Default %s]\n", rf_dev);
   printf("\t-g RF gain [Default %.2f dB]\n", rf_gain);
+  printf("\t-A Number of RX antennas [Default %d]\n", rf_nof_rx_ant);
   printf("\t-s earfcn_start [Default All]\n");
   printf("\t-e earfcn_end [Default All]\n");
   printf("\t-n nof_frames_total [Default 100]\n");
@@ -58,10 +60,13 @@ void usage(char* prog)
 void parse_args(int argc, char** argv)
 {
   int opt;
-  while ((opt = getopt(argc, argv, "agsendvb")) != -1) {
+  while ((opt = getopt(argc, argv, "aAgsendvbml")) != -1) {
     switch (opt) {
       case 'a':
         rf_args = argv[optind];
+        break;
+      case 'A':
+        rf_nof_rx_ant = (int)strtol(argv[optind], NULL, 10);
         break;
       case 'b':
         band = (int)strtol(argv[optind], NULL, 10);
@@ -77,6 +82,12 @@ void parse_args(int argc, char** argv)
         break;
       case 'n':
         cell_detect_config.max_frames_pss = (uint32_t)strtol(argv[optind], NULL, 10);
+        break;
+      case 'm':
+        cell_detect_config.max_frames_pbch = (uint32_t)strtol(argv[optind], NULL, 10);
+        break;
+      case 'l':
+        cell_detect_config.nof_valid_pss_frames = (uint32_t)strtol(argv[optind], NULL, 10);
         break;
       case 'g':
         rf_gain = strtof(argv[optind], NULL);
@@ -133,7 +144,7 @@ int main(int argc, char** argv)
 
   printf("Opening RF device...\n");
 
-  if (srsran_rf_open_devname(&rf, rf_dev, rf_args, 1)) {
+  if (srsran_rf_open_devname(&rf, rf_dev, rf_args, rf_nof_rx_ant)) {
     ERROR("Error opening rf");
     exit(-1);
   }
