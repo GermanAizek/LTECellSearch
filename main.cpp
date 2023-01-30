@@ -193,7 +193,7 @@ int main(int argc, char** argv)
 
   for (freq = 0; freq < nof_freqs && !go_exit; freq++) {
     /* set rf_freq */
-    srsran_rf_set_rx_freq(&rf, 0, (double)channels[freq].fd * MHZ);
+    srsran_rf_set_rx_freq(&rf, rf_nof_rx_ant, (double)channels[freq].fd * MHZ);
     INFO("Set rf_freq to %.3f MHz", (double)channels[freq].fd * MHZ / 1000000);
 
     printf(
@@ -221,7 +221,7 @@ int main(int argc, char** argv)
           srsran_cell_t cell;
           cell.id = found_cells[i].cell_id;
           cell.cp = found_cells[i].cp;
-          int ret = rf_mib_decoder(&rf, 1, &cell_detect_config, &cell, NULL);
+          int ret = rf_mib_decoder(&rf, rf_nof_rx_ant, &cell_detect_config, &cell, NULL);
           if (ret < 0) {
             ERROR("Error decoding MIB");
             exit(-1);
